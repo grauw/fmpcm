@@ -161,7 +161,7 @@ int32_t getUnique(std::array<int32_t, 256> mappingCounts)
 void testMapping()
 {
 	std::array<int32_t, 256> buffer {};
-	std::array<int32_t, 8> voice { 0x00, 0x24, 0x3F, 0x00, 0xFF, 0xFF, 0x0F, 0x0F };
+	std::array<int32_t, 8> voice { 0x00, 0x2C, 0x3F, 0x00, 0xFF, 0xFF, 0x0F, 0x0F };
 
 	calcChannel(voice, buffer);
 
