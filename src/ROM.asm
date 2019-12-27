@@ -29,6 +29,7 @@ ROM_PAGE1: ds 4000H
 	INCLUDE "Application.asm"
 	INCLUDE "Track.asm"
 	INCLUDE "Player.asm"
+	INCLUDE "Visualization.asm"
 	INCLUDE "drivers/Drivers.asm"
 	INCLUDE "RAM.asm"
 

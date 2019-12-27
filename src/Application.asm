@@ -63,6 +63,7 @@ Application_Construct:
 	ex (sp),ix
 	call Application_GetPlayer
 	pop de
+	ld a,1
 	call Player_Construct
 	pop ix
 	ret
