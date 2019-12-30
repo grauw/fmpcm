@@ -28,8 +28,11 @@ Visualization_Construct:
 	ld (ix + Visualization.borderColor),a
 	ld a,0
 	ld (BDRCLR),a
+	push ix
 	ld a,7
-	call CHGMOD
+	ld ix,CHGMOD
+	call System_CallBIOS
+	pop ix
 	call VDP_EnableBlank
 	call VDP_DisableSprites
 	call Visualization_Draw
@@ -47,7 +50,10 @@ Visualization_Destruct:
 	ld a,(ix + Visualization.borderColor)
 	ld (BDRCLR),a
 	call VDP_EnableSprites
-	call TOTEXT
+	push ix
+	ld ix,TOTEXT
+	call System_CallBIOS
+	pop ix
 	call VDP_DisableBlank
 	ret
 

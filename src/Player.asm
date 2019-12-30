@@ -1,13 +1,25 @@
 ;
 ; Playback code.
 ;
+Player_MAX_SEQUENCE_SIZE: equ Track_MAX_SEGMENTS + 16 * 2 + 1
+
 Player: MACRO
 	driver:
 		dw 0
 	enableVisualization:
 		db 0
+	sequence:
+		dw 0
 	visualization:
 		Visualization
+	ENDM
+
+PlayerSequence: MACRO
+	slot:
+		db 0
+	count:
+		db 0
+	segments:
 	ENDM
 
 ; a = enable visualisation
@@ -17,10 +29,24 @@ Player_Construct:
 	ld (ix + Player.driver),e
 	ld (ix + Player.driver + 1),d
 	ld (ix + Player.enableVisualization),a
+	push ix
+	ld bc,Player_MAX_SEQUENCE_SIZE
+	ld ix,Heap_main
+	call Heap_Allocate
+	pop ix
+	ld (ix + Player.sequence),e
+	ld (ix + Player.sequence + 1),d
 	ret
 
 ; ix = this
 Player_Destruct:
+	ld e,(ix + Player.sequence)
+	ld d,(ix + Player.sequence + 1)
+	push ix
+	ld bc,Player_MAX_SEQUENCE_SIZE
+	ld ix,Heap_main
+	call Heap_Free
+	pop ix
 	ret
 
 ; ix = this
@@ -66,6 +92,7 @@ Player_StopVisualisation:
 Player_Play:
 	call Track_IsEmptyIY
 	ret z
+	call Player_BuildSequence
 	call Player_StartVisualisation
 	ld b,17
 	call VDP_SetRegister
@@ -86,12 +113,7 @@ Player_Play:
 	pop ix
 	ld l,0
 	exx
-	ld hl,ROM_BANK_8000_CHANGE
-	ld c,(iy + Track.startBank)
-	ld b,(iy + Track.bankCount)
-	call Player_PlayBanks
-	ld a,1
-	ld (ROM_BANK_8000_CHANGE),a
+	call Player_PlaySequence
 	ld a,0
 	out (VDP_PORT_1),a
 	ld a,15 | VDP_REGISTER
@@ -99,16 +121,44 @@ Player_Play:
 	in a,(VDP_PORT_1)
 	ei
 	call Player_StopVisualisation
+	call Track_SetInitialSegmentIY
 	ret
 
-; c = start bank
-; b = bank count
 ; c' = port
 ; d' = mapping MSB
 ; l' = 0
+Player_PlaySequence: PROC
+	ld l,(ix + Player.sequence)
+	ld h,(ix + Player.sequence + 1)
+Loop:
+	ld a,(hl)
+	and a
+	ret z
+	inc hl
+	push hl
+	ld h,80H
+	call Memory_SetSlot
+	pop hl
+	ld b,(hl)
+	inc hl
+	inc b
+	ld c,0FEH
+	outi
+	call Player_PlayBanks
+	dec hl
+	jr c,Loop
+	ret
+	ENDP
+
+; b = bank count
+; c = mapper port
+; hl = bank sequence start
+; c' = port
+; d' = mapping MSB
+; l' = 0
+; f <- nc: playback aborted
 Player_PlayBanks: PROC
 BankLoop:
-	ld (hl),c
 	exx
 	ld h,80H
 Loop:
@@ -138,7 +188,58 @@ HRStartLoop:
 	bit 6,h
 	jr z,Loop
 	exx
-	inc c
-	djnz BankLoop
+	outi
+	jp nz,BankLoop
+	scf
+	ret
+	ENDP
+
+; iy = track
+; ix = this
+Player_BuildSequence: PROC
+	push ix
+	push iy
+	call Track_GetSegmentsAndLengthIY
+	ld e,(ix + Player.sequence)
+	ld d,(ix + Player.sequence + 1)
+	push hl
+	pop ix
+	ld hl,Player_MAX_SEQUENCE_SIZE - 2
+	ld a,(ix + MapperSegment.slot)
+	jr NewSlot
+Loop:
+	ld a,(ix + MapperSegment.slot)
+	cp (iy + PlayerSequence.slot)
+	jr z,Continue
+NewSlot:
+	dec hl
+	dec hl
+	bit 7,h
+	jr nz,Done
+	ld iyl,e
+	ld iyh,d
+	ld (iy + PlayerSequence.slot),a
+	ld (iy + PlayerSequence.count),0
+	inc de
+	inc de
+Continue:
+	ld a,(ix + MapperSegment.segment)
+	ld (de),a
+	inc de
+	inc (iy + PlayerSequence.count)
+	inc ix
+	inc ix
+	dec hl
+	bit 7,h
+	jr nz,Done
+	dec bc
+	ld a,b
+	or c
+	jr nz,Loop
+Done:
+	ld a,0
+	ld (de),a
+	pop iy
+	pop ix
 	ret
 	ENDP
