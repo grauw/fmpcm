@@ -4,6 +4,8 @@
 CLI_BUFFER_SIZE: equ 255
 
 CLI: MACRO
+	pathIndex:
+		db 1
 	fileInfoBlockReference:
 		dw 0
 	quiet:
@@ -16,6 +18,7 @@ CLI: MACRO
 ; ix = this
 ; ix <- this
 CLI_Construct:
+	ld (ix + CLI.pathIndex),1
 	jr CLI_Parse
 
 ; ix = this
@@ -41,11 +44,15 @@ CLI_HasFileInfoBlock:
 
 ; ix = this
 CLI_Parse: PROC
+	ld (ix + CLI.fileInfoBlockReference),0
+	ld (ix + CLI.fileInfoBlockReference + 1),0
 	push ix
 	ld ix,Heap_main
 	ld bc,CLI_BUFFER_SIZE
 	call Heap_Allocate
 	pop ix
+	ld a,(ix + CLI.pathIndex)
+	push af
 	push bc
 	push de
 	ld hl,CLI_parametersEnvName
@@ -55,6 +62,8 @@ CLI_Parse: PROC
 	call System_TryCall
 	pop de
 	pop bc
+	pop af
+	ld (ix + CLI.pathIndex),a
 	push ix
 	ld ix,Heap_main
 	call Heap_Free
@@ -105,9 +114,6 @@ Next:
 ; ix = this
 ; de <- buffer position
 CLI_ParsePath: PROC
-	call CLI_HasFileInfoBlock
-	ld hl,CLI_multiplePathsError
-	call nz,System_ThrowExceptionWithMessage
 	push de
 Loop:
 	ld a,(de)
@@ -122,6 +128,10 @@ Loop:
 	inc de
 FindFile:
 	pop hl
+	call CLI_HasFileInfoBlock
+	ret nz
+	dec (ix + CLI.pathIndex)
+	ret nz
 	push de
 	ex de,hl
 	push ix
@@ -178,7 +188,7 @@ Multiply10AndAdd:
 
 ; ix = this
 ; f <- c: not found
-CLI_NextPath:
+CLI_NextPath: PROC
 	call CLI_HasFileInfoBlock
 	call z,System_ThrowException
 	push ix
@@ -186,11 +196,19 @@ CLI_NextPath:
 	call DOS_FindNextEntry
 	pop ix
 	cp .NOFIL
-	scf
-	ret z
+	jr z,NotFound
 	call DOS_TerminateIfError
 	and a
 	ret
+NotFound:
+	inc (ix + CLI.pathIndex)
+	call z,System_ThrowException
+	call CLI_Parse
+	call CLI_HasFileInfoBlock
+	ret nz
+	scf
+	ret
+	ENDP
 
 ;
 CLI_parametersEnvName:
@@ -198,6 +216,3 @@ CLI_parametersEnvName:
 
 CLI_unknownOptionError:
 	db "Unknown command line option.",13,10,0
-
-CLI_multiplePathsError:
-	db "Can not specify more than one file path.",13,10,0

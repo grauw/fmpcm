@@ -218,7 +218,7 @@ Application_driverNotFound:
 	db "MSX-MUSIC not found.",13,10,0
 
 Application_usageInstructions:
-	db "Usage: fmpcm [options] <file.raw>",13,10
+	db "Usage: fmpcm [options] <file.raw>...",13,10
 	db 13,10
 	db "Options:",13,10
 	db "  /q  No messages and visualisation.",13,10,0
