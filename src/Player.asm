@@ -105,6 +105,12 @@ Player_Play:
 	and 0F0H
 	or 7  ; ESC row
 	out (0AAH),a
+	ld a,15
+	out (0A0H),a
+	ld a,10001111B  ; joystick port 1
+	out (0A1H),a
+	ld a,14
+	out (0A0H),a
 	exx
 	push ix
 	call Player_GetDriver
@@ -165,6 +171,9 @@ Loop:
 	call Player_PlaySample
 	in a,(0A9H)
 	and 00000100B  ; ESC
+	ret z
+	in a,(0A2H)
+	and 00010000B  ; trigger A
 	ret z
 	call Player_PlaySample
 	bit 6,h
