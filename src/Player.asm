@@ -162,9 +162,26 @@ BankLoop:
 	exx
 	ld h,80H
 Loop:
+	call Player_PlaySample
 	in a,(0A9H)
 	and 00000100B  ; ESC
 	ret z
+	call Player_PlaySample
+	bit 6,h
+	jr z,Loop
+	exx
+	outi
+	jp nz,BankLoop
+	scf
+	ret
+	ENDP
+
+; b = line counter
+; c = port
+; d = mapping MSB
+; hl = sample pointer
+; hl <- incremented sample pointer
+Player_PlaySample: PROC
 HREndLoop:
 	in a,(VDP_PORT_1)
 	add a,a
@@ -185,12 +202,6 @@ HRStartLoop:
 	out (c),a
 	dec b
 	inc hl
-	bit 6,h
-	jr z,Loop
-	exx
-	outi
-	jp nz,BankLoop
-	scf
 	ret
 	ENDP
 
