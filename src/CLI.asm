@@ -176,6 +176,22 @@ Multiply10AndAdd:
 	ret
 	ENDP
 
+; ix = this
+; f <- c: not found
+CLI_NextPath:
+	call CLI_HasFileInfoBlock
+	call z,System_ThrowException
+	push ix
+	call CLI_GetFileInfoBlock
+	call DOS_FindNextEntry
+	pop ix
+	cp .NOFIL
+	scf
+	ret z
+	call DOS_TerminateIfError
+	and a
+	ret
+
 ;
 CLI_parametersEnvName:
 	db "PARAMETERS",0

@@ -121,7 +121,7 @@ Application_Print:
 	ret
 
 ; ix = this
-Application_Run:
+Application_Run: PROC
 	ld hl,Application_welcome
 	call Application_Print
 	push ix
@@ -130,10 +130,17 @@ Application_Run:
 	pop ix
 	ld hl,Application_usageInstructions
 	call z,System_ThrowExceptionWithMessage
+Loop:
 	call Application_Load
 	call Application_Play
 	call Application_Unload
+	push ix
+	call Application_GetCLI
+	call CLI_NextPath
+	pop ix
+	jr nc,Loop
 	ret
+	ENDP
 
 ; ix = this
 Application_Load:
