@@ -7,6 +7,8 @@ Track_LOAD_BUFFER_SIZE: equ 2000H
 Track: MACRO
 	length:
 		dd 0
+	halfRate:
+		db 0
 	segmentCount:
 		dw 0
 	segments:
@@ -15,8 +17,10 @@ Track: MACRO
 		dw 0
 	ENDM
 
+; a = half rate (7850 Hz)
 ; ix = this
 Track_Construct:
+	ld (ix + Track.halfRate),a
 	push ix
 	ld bc,Track_MAX_SEGMENTS * MapperSegment._size
 	ld ix,Heap_main

@@ -93,6 +93,7 @@ Player_Play:
 	call Track_IsEmptyIY
 	ret z
 	call Player_BuildSequence
+	call Player_UpdateHalfRate
 	call Player_StartVisualisation
 	ld b,17
 	call VDP_SetRegister
@@ -156,6 +157,8 @@ Loop:
 	ret
 	ENDP
 
+	SECTION RAM
+
 ; b = bank count
 ; c = mapper port
 ; hl = bank sequence start
@@ -169,6 +172,8 @@ BankLoop:
 	ld h,80H
 Loop:
 	call Player_PlaySample
+halfRate:
+	inc hl
 	in a,(0A9H)
 	and 00000100B  ; ESC
 	ret z
@@ -176,6 +181,7 @@ Loop:
 	and 00010000B  ; trigger A
 	ret z
 	call Player_PlaySample
+	inc hl
 	bit 6,h
 	jr z,Loop
 	exx
@@ -184,6 +190,8 @@ Loop:
 	scf
 	ret
 	ENDP
+
+	ENDS
 
 ; b = line counter
 ; c = port
@@ -210,7 +218,18 @@ HRStartLoop:
 	ld a,(de)
 	out (c),a
 	dec b
-	inc hl
+	ret
+	ENDP
+
+; iy = track
+; ix = this
+Player_UpdateHalfRate: PROC
+	bit 0,(iy + Track.halfRate)
+	ld a,23H  ; inc hl
+	jr z,FullRate
+	ld a,00H  ; nop
+FullRate:
+	ld (Player_PlayBanks.halfRate),a
 	ret
 	ENDP
 

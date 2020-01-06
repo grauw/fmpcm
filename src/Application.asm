@@ -41,6 +41,8 @@ Application_Construct:
 	call Application_GetDrivers
 	call Drivers_Construct
 	pop ix
+	call Application_GetCLI_IY
+	ld a,(iy + CLI.halfRate)
 	push ix
 	call Application_GetTrack
 	call Track_Construct
@@ -225,4 +227,5 @@ Application_usageInstructions:
 	db "Options:",13,10
 	db "  /q  No messages and visualisation.",13,10
 	db "  /v  Disable visualisation.",13,10
-	db "  /r  Prefer TurboR PCM.",13,10,0
+	db "  /r  Prefer TurboR PCM.",13,10
+	db "  /h  Half frequency (7850 Hz).",13,10,0

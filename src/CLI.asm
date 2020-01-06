@@ -14,6 +14,8 @@ CLI: MACRO
 		db 0
 	preferTurboRPCM:
 		db 0
+	halfRate:
+		db 0
 	fileInfoBlock:
 		FileInfoBlock
 	_size:
@@ -104,6 +106,8 @@ CLI_ParseOption: PROC
 	jr z,OptionDisableVisualization
 	cp "R"
 	jr z,OptionPreferTurboRPCM
+	cp "H"
+	jr z,OptionHalfRate
 	ld hl,CLI_unknownOptionError
 	call System_ThrowExceptionWithMessage
 OptionQuiet:
@@ -117,6 +121,10 @@ OptionDisableVisualization:
 	jr Next
 OptionPreferTurboRPCM:
 	ld (ix + CLI.preferTurboRPCM),-1
+	inc de
+	jr Next
+OptionHalfRate:
+	ld (ix + CLI.halfRate),-1
 	inc de
 	jr Next
 Next:
