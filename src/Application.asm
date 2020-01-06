@@ -49,7 +49,7 @@ Application_Construct:
 	call Drivers_GetDriver
 	ex (sp),ix
 	call Application_GetCLI_IY
-	ld a,(iy + CLI.quiet)
+	ld a,(iy + CLI.disableVisualization)
 	cpl
 	call Application_GetPlayer
 	pop de
@@ -221,4 +221,5 @@ Application_usageInstructions:
 	db "Usage: fmpcm [options] <file.raw>...",13,10
 	db 13,10
 	db "Options:",13,10
-	db "  /q  No messages and visualisation.",13,10,0
+	db "  /q  No messages and visualisation.",13,10
+	db "  /v  Disable visualisation.",13,10,0

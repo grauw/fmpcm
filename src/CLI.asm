@@ -10,6 +10,8 @@ CLI: MACRO
 		dw 0
 	quiet:
 		db 0
+	disableVisualization:
+		db 0
 	fileInfoBlock:
 		FileInfoBlock
 	_size:
@@ -96,10 +98,17 @@ CLI_ParseOption: PROC
 	and 11011111B  ; upper-case
 	cp "Q"
 	jr z,OptionQuiet
+	cp "V"
+	jr z,OptionDisableVisualization
 	ld hl,CLI_unknownOptionError
 	call System_ThrowExceptionWithMessage
 OptionQuiet:
 	ld (ix + CLI.quiet),-1
+	ld (ix + CLI.disableVisualization),-1
+	inc de
+	jr Next
+OptionDisableVisualization:
+	ld (ix + CLI.disableVisualization),-1
 	inc de
 	jr Next
 Next:
