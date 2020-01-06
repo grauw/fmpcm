@@ -7,6 +7,8 @@
 	INCLUDE "Dummy.asm"
 
 Drivers: MACRO
+	preferTurboRPCM:
+		db 0
 	msxMusic:
 		MSXMusic
 	turboRPCM:
@@ -15,8 +17,10 @@ Drivers: MACRO
 		Dummy
 	ENDM
 
+; a = prefer turboR PCM
 ; ix = this
 Drivers_Construct:
+	ld (ix + Drivers.preferTurboRPCM),a
 	push ix
 	call Drivers_GetMSXMusic
 	call MSXMusic_Construct
@@ -72,6 +76,8 @@ Drivers_GetDummy:
 ; ix <- driver
 ; f <- nz: found
 Drivers_GetDriver:
+	bit 0,(ix + Drivers.preferTurboRPCM)
+	jr nz,Drivers_GetDriverPreferTurboRPCM
 	ld de,Drivers.msxMusic
 	add ix,de
 	call Driver_IsFound
@@ -81,6 +87,23 @@ Drivers_GetDriver:
 	call Driver_IsFound
 	ret nz
 	ld de,Drivers.dummy - Drivers.turboRPCM
+	add ix,de
+	call Driver_IsFound
+	ret
+
+; ix = this
+; ix <- driver
+; f <- nz: found
+Drivers_GetDriverPreferTurboRPCM:
+	ld de,Drivers.turboRPCM
+	add ix,de
+	call Driver_IsFound
+	ret nz
+	ld de,Drivers.msxMusic - Drivers.turboRPCM
+	add ix,de
+	call Driver_IsFound
+	ret nz
+	ld de,Drivers.dummy - Drivers.msxMusic
 	add ix,de
 	call Driver_IsFound
 	ret

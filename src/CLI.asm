@@ -12,6 +12,8 @@ CLI: MACRO
 		db 0
 	disableVisualization:
 		db 0
+	preferTurboRPCM:
+		db 0
 	fileInfoBlock:
 		FileInfoBlock
 	_size:
@@ -100,6 +102,8 @@ CLI_ParseOption: PROC
 	jr z,OptionQuiet
 	cp "V"
 	jr z,OptionDisableVisualization
+	cp "R"
+	jr z,OptionPreferTurboRPCM
 	ld hl,CLI_unknownOptionError
 	call System_ThrowExceptionWithMessage
 OptionQuiet:
@@ -109,6 +113,10 @@ OptionQuiet:
 	jr Next
 OptionDisableVisualization:
 	ld (ix + CLI.disableVisualization),-1
+	inc de
+	jr Next
+OptionPreferTurboRPCM:
+	ld (ix + CLI.preferTurboRPCM),-1
 	inc de
 	jr Next
 Next:

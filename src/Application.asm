@@ -35,6 +35,8 @@ Application_Construct:
 	call Application_GetCLI
 	call CLI_Construct
 	pop ix
+	call Application_GetCLI_IY
+	ld a,(iy + CLI.preferTurboRPCM)
 	push ix
 	call Application_GetDrivers
 	call Drivers_Construct
@@ -222,4 +224,5 @@ Application_usageInstructions:
 	db 13,10
 	db "Options:",13,10
 	db "  /q  No messages and visualisation.",13,10
-	db "  /v  Disable visualisation.",13,10,0
+	db "  /v  Disable visualisation.",13,10
+	db "  /r  Prefer TurboR PCM.",13,10,0
