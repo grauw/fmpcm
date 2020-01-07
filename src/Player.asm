@@ -64,6 +64,7 @@ Player_GetVisualization:
 	add ix,de
 	ret
 
+; iy = track
 ; ix = this
 ; a <- indirect VDP register
 Player_StartVisualisation:
@@ -115,6 +116,8 @@ Player_Play:
 	exx
 	push ix
 	call Player_GetDriver
+	ld a,(iy + Track.unsignedPCM)
+	call Driver_SetUnsignedPCM
 	call Driver_GetPort
 	call Driver_GetMapping
 	pop ix

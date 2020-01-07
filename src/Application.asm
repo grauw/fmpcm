@@ -43,6 +43,7 @@ Application_Construct:
 	pop ix
 	call Application_GetCLI_IY
 	ld a,(iy + CLI.halfRate)
+	ld b,(iy + CLI.unsignedPCM)
 	push ix
 	call Application_GetTrack
 	call Track_Construct
@@ -228,4 +229,5 @@ Application_usageInstructions:
 	db "  /q  No messages and visualisation.",13,10
 	db "  /v  Disable visualisation.",13,10
 	db "  /r  Prefer TurboR PCM.",13,10
-	db "  /h  Half frequency (7850 Hz).",13,10,0
+	db "  /h  Half frequency (7850 Hz).",13,10
+	db "  /u  Unsigned PCM.",13,10,0

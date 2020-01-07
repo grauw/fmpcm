@@ -16,6 +16,8 @@ CLI: MACRO
 		db 0
 	halfRate:
 		db 0
+	unsignedPCM:
+		db 0
 	fileInfoBlock:
 		FileInfoBlock
 	_size:
@@ -108,6 +110,8 @@ CLI_ParseOption: PROC
 	jr z,OptionPreferTurboRPCM
 	cp "H"
 	jr z,OptionHalfRate
+	cp "U"
+	jr z,OptionUnsignedPCM
 	ld hl,CLI_unknownOptionError
 	call System_ThrowExceptionWithMessage
 OptionQuiet:
@@ -125,6 +129,10 @@ OptionPreferTurboRPCM:
 	jr Next
 OptionHalfRate:
 	ld (ix + CLI.halfRate),-1
+	inc de
+	jr Next
+OptionUnsignedPCM:
+	ld (ix + CLI.unsignedPCM),-1
 	inc de
 	jr Next
 Next:

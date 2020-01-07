@@ -14,6 +14,7 @@ Visualization: MACRO
 		VDPCommand 0, 0, 0, 0, 1, 1, 8, 0, VDPCommand_LMMV
 	ENDM
 
+; iy = track
 ; ix = this
 Visualization_Construct:
 	ld a,(FORCLR)
@@ -57,6 +58,7 @@ Visualization_Destruct:
 	call VDP_DisableBlank
 	ret
 
+; iy = track
 ; ix = this
 Visualization_Draw: PROC
 	push ix
@@ -64,9 +66,12 @@ Visualization_Draw: PROC
 	add ix,de
 	call VDPCommand_Execute
 	pop ix
-	ld b,0
+	ld bc,0
+	bit 0,(iy + Track.unsignedPCM)
+	jr z,Loop
+	ld c,80H
 Loop:
-	ld a,0
+	ld a,c  ; signed / unsigned
 	sub b
 	jp m,Negative
 Positive:

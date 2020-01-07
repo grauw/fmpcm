@@ -9,6 +9,8 @@ Track: MACRO
 		dd 0
 	halfRate:
 		db 0
+	unsignedPCM:
+		db 0
 	segmentCount:
 		dw 0
 	segments:
@@ -18,9 +20,11 @@ Track: MACRO
 	ENDM
 
 ; a = half rate (7850 Hz)
+; b = unsigned PCM
 ; ix = this
 Track_Construct:
 	ld (ix + Track.halfRate),a
+	ld (ix + Track.unsignedPCM),b
 	push ix
 	ld bc,Track_MAX_SEGMENTS * MapperSegment._size
 	ld ix,Heap_main

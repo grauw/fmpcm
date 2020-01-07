@@ -8,6 +8,8 @@ Driver: MACRO ?port, ?mapping
 		db ?port
 	mapping:
 		db ?mapping >> 8
+	unsignedPCM:
+		db 0
 	ENDM
 
 ; ix = this
@@ -32,4 +34,25 @@ Driver_GetPort:
 Driver_GetMapping:
 	ld e,0
 	ld d,(ix + Driver.mapping)
+	ret
+
+; a = unsigned PCM
+; ix = this
+Driver_SetUnsignedPCM:
+	cp (ix + Driver.unsignedPCM)
+	ret z
+	ld (ix + Driver.unsignedPCM),a
+	call Driver_GetMapping
+	ld b,80H
+	ld hl,0080H
+	add hl,de
+Loop:
+	ld a,(de)
+	ld c,(hl)
+	ex de,hl
+	ld (de),a
+	ld (hl),c
+	inc de
+	inc hl
+	djnz Loop
 	ret
