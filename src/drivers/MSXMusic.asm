@@ -8,7 +8,7 @@ MSXMusic_ENABLE_ADDRESS: equ 7FF6H
 
 MSXMusic: MACRO
 	super:
-		Driver MSXMusic_DATA, MSXMusic_amplitudeMap
+		Driver MSXMusic_DATA, MSXMusic_amplitudeMap, MSXMusic_name
 	slot:
 		db 0
 	internal:
@@ -137,6 +137,9 @@ MSXMusic_MatchExternalID:
 	jp Memory_MatchSlotString
 
 ;
+MSXMusic_name:
+	db "MSX-MUSIC (YM2413 OPLL)",0
+
 MSXMusic_internalId:
 	db "APRLOPLL"
 

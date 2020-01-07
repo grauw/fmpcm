@@ -1,13 +1,15 @@
 ;
 ; Sound chip driver.
 ;
-Driver: MACRO ?port, ?mapping
+Driver: MACRO ?port, ?mapping, ?name
 	found:
 		db 1
 	port:
 		db ?port
 	mapping:
 		db ?mapping >> 8
+	name:
+		dw ?name
 	unsignedPCM:
 		db 0
 	ENDM
@@ -34,6 +36,13 @@ Driver_GetPort:
 Driver_GetMapping:
 	ld e,0
 	ld d,(ix + Driver.mapping)
+	ret
+
+; ix = this
+; hl <- port
+Driver_GetName:
+	ld l,(ix + Driver.name)
+	ld h,(ix + Driver.name + 1)
 	ret
 
 ; a = unsigned PCM

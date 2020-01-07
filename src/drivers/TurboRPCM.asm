@@ -6,7 +6,7 @@ TurboRPCM_CONTROL: equ 0A5H
 
 TurboRPCM: MACRO
 	super:
-		Driver TurboRPCM_DATA, TurboRPCM_amplitudeMap
+		Driver TurboRPCM_DATA, TurboRPCM_amplitudeMap, TurboRPCM_name
 	ENDM
 
 ; ix = this
@@ -37,6 +37,9 @@ TurboRPCM_Detect:
 	ret
 
 ;
+TurboRPCM_name:
+	db "TurboR PCM",0
+
 	SECTION RAM
 
 	ALIGN 100H

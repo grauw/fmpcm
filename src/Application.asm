@@ -135,6 +135,7 @@ Application_Run: PROC
 	pop ix
 	ld hl,Application_usageInstructions
 	call z,System_ThrowExceptionWithMessage
+	call Application_PrintInfo
 Loop:
 	call Application_Load
 	call Application_Play
@@ -176,6 +177,36 @@ Application_PrintLoading:
 	ret
 
 ; ix = this
+Application_PrintInfo: PROC
+	call Application_GetCLI_IY
+	ld hl,Application_bits
+	call Application_Print
+	bit 0,(iy + CLI.halfRate)
+	ld hl,Application_frequencyHalf
+	jr nz,HalfRate
+	ld hl,Application_frequencyFull
+HalfRate:
+	call Application_Print
+	bit 0,(iy + CLI.unsignedPCM)
+	ld hl,Application_unsigned
+	jr nz,Unsigned
+	ld hl,Application_signed
+Unsigned:
+	call Application_Print
+	ld hl,Application_soundChip
+	call Application_Print
+	push ix
+	call Application_GetDrivers
+	call Drivers_GetDriver
+	call Driver_GetName
+	pop ix
+	call Application_Print
+	ld hl,Application_endPlayback
+	call Application_Print
+	ret
+	ENDP
+
+; ix = this
 Application_Unload:
 	push ix
 	call Application_GetTrack
@@ -206,15 +237,34 @@ Application_instance:
 	ENDS
 
 Application_welcome:
-	db "FM PCM Player 1.0 by Grauw",13,10,10
-	db "Plays 15.7 kHz 8-bit signed PCM on MSX-MUSIC (YM2413 OPLL).",13,10
-	db "Press ESC to end playback.",13,10,10,0
+	db "FM PCM Player 1.0 by Grauw",13,10,10,0
 
 Application_loading:
 	db "Loading ",0
 
 Application_dotDotDot:
 	db "...",13,10,0
+
+Application_bits:
+	db "Bit depth: 8-bit",13,10,0
+
+Application_frequencyFull:
+	db "Frequency: 15700 Hz",13,10,0
+
+Application_frequencyHalf:
+	db "Frequency: 7850 Hz",13,10,0
+
+Application_signed:
+	db "Signedness: Signed",13,10,0
+
+Application_unsigned:
+	db "Signedness: Unsigned",13,10,0
+
+Application_soundChip:
+	db "Sound chip: ",0
+
+Application_endPlayback:
+	db 13,10,"Press ESC to end playback.",13,10,10,0
 
 Application_playing:
 	db "Playing...",13,10,0
