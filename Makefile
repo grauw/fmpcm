@@ -4,6 +4,11 @@ all:
 	mkdir -p bin
 	java -Xss160K -jar tools/glass.jar -I gen -I lib/neonlib/src/ src/COM.asm bin/fmpcm.com bin/fmpcm.sym
 
+dist: all
+	cp README.md LICENSE bin/
+	rm -f bin/fmpcm.zip
+	cd bin && zip fmpcm.zip fmpcm.com README.md LICENSE
+
 copy: all
 	cp bin/fmpcm.com $(COPY_TARGET)/
 	diskutil umount $(COPY_TARGET)
