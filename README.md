@@ -10,11 +10,11 @@ Project information
 
 Plays back PCM files on the YM2413 OPLL MSX-MUSIC sound chip.
 
-Author: Laurens Holst <laurens@grauw.nl>  
-Site: <http://www.grauw.nl/projects/fmpcm/>  
-Source: <https://hg.sr.ht/~grauw/fmpcm>  
-Support: <http://www.msx.org/forum/msx-talk/software/fm-pcm-player>  
-License: Simplified BSD License
+* Author: Laurens Holst <laurens@grauw.nl>
+* Site: <http://www.grauw.nl/projects/fmpcm/>
+* Source: <https://hg.sr.ht/~grauw/fmpcm>
+* Support: <http://www.msx.org/forum/msx-talk/software/fm-pcm-player>
+* License: Simplified BSD License
 
 This player plays 15.7 kHz or 7.85 kHz PCM on the MSX-MUSIC. The PCM file must
 be 8-bit raw PCM data at one of the aforementioned frequencies. By default the
