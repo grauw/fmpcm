@@ -38,6 +38,7 @@ System requirements
   * 128K main RAM (several MB recommended)
   * 128K video RAM
   * MSX-DOS 2
+  * MSX-MUSIC with real YM2413, or very accurate emulation
 
 
 Usage instructions
