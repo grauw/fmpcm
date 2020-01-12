@@ -31,7 +31,7 @@ provides a good high-frequency timer on MSX2 that is CPU speed independent.
 Additionally it lets us render a nice visualisation during playback.
 
 
-System Requirements
+System requirements
 -------------------
 
   * MSX2, MSX2+ or MSX turboR
