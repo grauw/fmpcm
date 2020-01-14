@@ -94,6 +94,11 @@ Player_StopVisualisation:
 Player_Play:
 	call Track_IsEmptyIY
 	ret z
+	push ix
+	call Player_GetDriver
+	ld a,(iy + Track.unsignedPCM)
+	call Driver_SetUnsignedPCM
+	pop ix
 	call Player_BuildSequence
 	call Player_UpdateHalfRate
 	call Player_StartVisualisation
@@ -114,16 +119,6 @@ Player_Play:
 	out (0A1H),a
 	ld a,14
 	out (0A0H),a
-	exx
-	push ix
-	call Player_GetDriver
-	ld a,(iy + Track.unsignedPCM)
-	call Driver_SetUnsignedPCM
-	call Driver_GetPort
-	call Driver_GetMapping
-	pop ix
-	ld hl,Player_PAGE_BASE
-	exx
 	call Player_PlaySequence
 	ld a,0
 	out (VDP_PORT_1),a
@@ -136,11 +131,17 @@ Player_Play:
 	call Track_SetInitialSegmentIY
 	ret
 
-; c' = port
-; d' = mapping MSB
-; hl' = data start
+; ix = this
 ; f <- c: playback aborted
 Player_PlaySequence: PROC
+	exx
+	push ix
+	call Player_GetDriver
+	call Driver_GetPort
+	call Driver_GetMapping
+	pop ix
+	ld hl,Player_PAGE_BASE
+	exx
 	ld l,(ix + Player.sequence)
 	ld h,(ix + Player.sequence + 1)
 Loop:
