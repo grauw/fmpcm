@@ -121,7 +121,7 @@ Player_Play:
 	call Driver_GetPort
 	call Driver_GetMapping
 	pop ix
-	ld l,0
+	ld hl,8000H
 	exx
 	call Player_PlaySequence
 	ld a,0
@@ -136,7 +136,8 @@ Player_Play:
 
 ; c' = port
 ; d' = mapping MSB
-; l' = 0
+; hl' = data start
+; f <- c: playback aborted
 Player_PlaySequence: PROC
 	ld l,(ix + Player.sequence)
 	ld h,(ix + Player.sequence + 1)
@@ -151,12 +152,9 @@ Loop:
 	pop hl
 	ld b,(hl)
 	inc hl
-	inc b
 	ld c,0FEH
-	outi
 	call Player_PlayBanks
-	dec hl
-	jr c,Loop
+	jr nc,Loop
 	ret
 	ENDP
 
@@ -167,12 +165,18 @@ Loop:
 ; hl = bank sequence start
 ; c' = port
 ; d' = mapping MSB
-; l' = 0
-; f <- nc: playback aborted
+; hl' = data start
+; f <- c: playback aborted
+; hl <- bank sequence end
 Player_PlayBanks: PROC
-BankLoop:
+	outi
+	inc b
 	exx
-	ld h,80H
+	call Loop
+	exx
+	ccf
+	dec hl
+	ret
 Loop:
 	call Player_PlaySample
 halfRate:
@@ -187,9 +191,11 @@ halfRate:
 	inc hl
 	bit 6,h
 	jr z,Loop
+	ld h,80H
 	exx
 	outi
-	jp nz,BankLoop
+	exx
+	jp nz,Loop
 	scf
 	ret
 	ENDP
