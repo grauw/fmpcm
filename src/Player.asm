@@ -2,6 +2,7 @@
 ; Playback code.
 ;
 Player_MAX_SEQUENCE_SIZE: equ Track_MAX_SEGMENTS + 16 * 2 + 1
+Player_PAGE_BASE: equ 8000H
 
 Player: MACRO
 	driver:
@@ -121,7 +122,7 @@ Player_Play:
 	call Driver_GetPort
 	call Driver_GetMapping
 	pop ix
-	ld hl,8000H
+	ld hl,Player_PAGE_BASE
 	exx
 	call Player_PlaySequence
 	ld a,0
@@ -131,6 +132,7 @@ Player_Play:
 	in a,(VDP_PORT_1)
 	ei
 	call Player_StopVisualisation
+	ld h,Player_PAGE_BASE >> 8
 	call Track_SetInitialSegmentIY
 	ret
 
@@ -147,7 +149,7 @@ Loop:
 	ret z
 	inc hl
 	push hl
-	ld h,80H
+	ld h,Player_PAGE_BASE >> 8
 	call Memory_SetSlot
 	pop hl
 	ld b,(hl)
@@ -190,8 +192,8 @@ halfRate:
 	call Player_PlaySample
 	inc hl
 	bit 6,h
-	jr z,Loop
-	ld h,80H
+	jr (Player_PAGE_BASE >> 14 & 1 ? nz : z),Loop
+	ld h,Player_PAGE_BASE >> 8
 	exx
 	outi
 	exx

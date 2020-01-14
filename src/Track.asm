@@ -3,6 +3,7 @@
 ;
 Track_MAX_SEGMENTS: equ 400H
 Track_LOAD_BUFFER_SIZE: equ 2000H
+Track_PAGE_BASE: equ 8000H
 
 Track: MACRO
 	length:
@@ -41,7 +42,7 @@ Track_Construct:
 	ld (ix + Track.loadBuffer + 1),d
 	push iy
 	call Track_GetSegments_IY
-	ld h,80H
+	ld h,Track_PAGE_BASE >> 8
 	push bc
 	call Memory_GetSlot
 	pop bc
@@ -107,18 +108,19 @@ Track_IsEmptyIY:
 	or (iy + Track.length + 3)
 	ret
 
+; h = page
 ; ix = this
 Track_SetInitialSegment:
 	push iy
 	call Track_GetSegments_IY
 	ld a,(iy + MapperSegment.segment)
-	call Mapper_instance.PutP2
+	call Mapper_instance.PutPH
 	ld a,(iy + MapperSegment.slot)
-	ld h,80H
 	call Memory_SetSlot
 	pop iy
 	ret
 
+; h = page
 ; iy = this
 Track_SetInitialSegmentIY:
 	push iy
@@ -190,6 +192,7 @@ Loop:
 Done:
 	call Track_Pad
 OutOfMemory:
+	ld h,Track_PAGE_BASE >> 8
 	call Track_SetInitialSegment
 	ret
 	ENDP
@@ -255,7 +258,7 @@ Track_AddNewSegment:
 	ld (iy + MapperSegment.segment),a
 	ld (iy + MapperSegment.slot),b
 	ld a,(iy + MapperSegment.slot)
-	ld h,80H
+	ld h,Track_PAGE_BASE >> 8
 	call Memory_SetSlot
 	ld a,(iy + MapperSegment.segment)
 	call Mapper_instance.PutP2
