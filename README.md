@@ -53,6 +53,11 @@ Usage:
 
 Options:
 
+  * `/l` Number of playback loops. Default: 1.
+    
+    How many times the sample should be repeated. The amount is specified like
+    `/L15`. Use `/L` or `/L0` to loop infinitely.
+    
   * `/q` Suppress messages and visualisation.
     
     Completely prevents any visual output, except for errors.

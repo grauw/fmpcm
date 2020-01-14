@@ -7,6 +7,8 @@ Player_PAGE_BASE: equ 8000H
 Player: MACRO
 	driver:
 		dw 0
+	loops:
+		db 1
 	enableVisualization:
 		db 0
 	sequence:
@@ -24,12 +26,14 @@ PlayerSequence: MACRO
 	ENDM
 
 ; a = enable visualisation
+; b = loops (0: infinite)
 ; de = driver
 ; ix = this
 Player_Construct:
 	ld (ix + Player.driver),e
 	ld (ix + Player.driver + 1),d
 	ld (ix + Player.enableVisualization),a
+	ld (ix + Player.loops),b
 	push ix
 	ld bc,Player_MAX_SEQUENCE_SIZE
 	ld ix,Heap_main
@@ -119,7 +123,7 @@ Player_Play:
 	out (0A1H),a
 	ld a,14
 	out (0A0H),a
-	call Player_PlaySequence
+	call Player_PlaySequenceLoops
 	ld a,0
 	out (VDP_PORT_1),a
 	ld a,15 | VDP_REGISTER
@@ -130,6 +134,22 @@ Player_Play:
 	ld h,Player_PAGE_BASE >> 8
 	call Track_SetInitialSegmentIY
 	ret
+
+; ix = this
+Player_PlaySequenceLoops: PROC
+	ld b,(ix + Player.loops)
+Loop:
+	push bc
+	call Player_PlaySequence
+	pop bc
+	ret c
+	ld a,b
+	add a,-1
+	jr nc,Loop
+	ld b,a
+	jr nz,Loop
+	ret
+	ENDP
 
 ; ix = this
 ; f <- c: playback aborted

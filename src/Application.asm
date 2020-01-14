@@ -56,6 +56,7 @@ Application_Construct:
 	call Application_GetCLI_IY
 	ld a,(iy + CLI.disableVisualization)
 	cpl
+	ld b,(iy + CLI.loops)
 	call Application_GetPlayer
 	pop de
 	call Player_Construct

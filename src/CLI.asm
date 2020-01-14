@@ -8,6 +8,8 @@ CLI: MACRO
 		db 1
 	fileInfoBlockReference:
 		dw 0
+	loops:
+		db 1
 	quiet:
 		db 0
 	disableVisualization:
@@ -102,6 +104,8 @@ CLI_ParseOption: PROC
 	inc de
 	ld a,(de)
 	and 11011111B  ; upper-case
+	cp "L"
+	jr z,OptionLoops
 	cp "Q"
 	jr z,OptionQuiet
 	cp "V"
@@ -114,6 +118,11 @@ CLI_ParseOption: PROC
 	jr z,OptionUnsignedPCM
 	ld hl,CLI_unknownOptionError
 	call System_ThrowExceptionWithMessage
+OptionLoops:
+	inc de
+	call CLI_ParseNumber
+	ld (ix + CLI.loops),c
+	jr Next
 OptionQuiet:
 	ld (ix + CLI.quiet),-1
 	ld (ix + CLI.disableVisualization),-1
