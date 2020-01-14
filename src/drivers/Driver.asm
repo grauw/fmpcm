@@ -47,7 +47,7 @@ Driver_GetName:
 
 ; a = unsigned PCM
 ; ix = this
-Driver_SetUnsignedPCM:
+Driver_SetUnsignedPCM: PROC
 	cp (ix + Driver.unsignedPCM)
 	ret z
 	ld (ix + Driver.unsignedPCM),a
@@ -65,3 +65,4 @@ Loop:
 	inc hl
 	djnz Loop
 	ret
+	ENDP
