@@ -115,6 +115,6 @@ To launch the build in openMSX after building, put a copy of `MSXDOS2.SYS` and
 `COMMAND2.COM` and some PCM files to test with in the `bin` directory, and then
 invoke the `make run` command.
 
-Note that the [glass](https://bitbucket.org/grauw/glass) assembler which is
+Note that the [glass](http://www.grauw.nl/projects/glass/) assembler which is
 embedded in the project requires [Java 8](http://java.com/getjava). To check
 your Java version, invoke the `java -version` command.
