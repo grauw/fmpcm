@@ -2,7 +2,7 @@ COPY_TARGET = /Volumes/MSXDOS2
 
 all:
 	mkdir -p bin
-	java -Xss160K -jar tools/glass.jar -I gen -I lib/neonlib/src/ src/COM.asm bin/fmpcm.com bin/fmpcm.sym
+	java -jar tools/glass.jar -I gen -I lib/neonlib/src/ src/COM.asm bin/fmpcm.com bin/fmpcm.sym
 
 dist: all
 	rm -f bin/fmpcm.zip
