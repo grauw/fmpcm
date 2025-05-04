@@ -72,7 +72,7 @@ Player_GetVisualization:
 ; iy = track
 ; ix = this
 ; a <- indirect VDP register
-Player_StartVisualisation:
+Player_StartVisualization:
 	ld a,32 | 128
 	bit 0,(ix + Player.enableVisualization)
 	ret z
@@ -84,7 +84,7 @@ Player_StartVisualisation:
 	ret
 
 ; ix = this
-Player_StopVisualisation:
+Player_StopVisualization:
 	bit 0,(ix + Player.enableVisualization)
 	ret z
 	push ix
@@ -105,7 +105,7 @@ Player_Play:
 	pop ix
 	call Player_BuildSequence
 	call Player_UpdateHalfRate
-	call Player_StartVisualisation
+	call Player_StartVisualization
 	ld b,17
 	call VDP_SetRegister
 	di
@@ -130,7 +130,7 @@ Player_Play:
 	out (VDP_PORT_1),a
 	in a,(VDP_PORT_1)
 	ei
-	call Player_StopVisualisation
+	call Player_StopVisualization
 	ld h,Player_PAGE_BASE >> 8
 	call Track_SetInitialSegmentIY
 	ret
