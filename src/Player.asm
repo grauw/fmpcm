@@ -41,6 +41,9 @@ Player_Construct:
 	pop ix
 	ld (ix + Player.sequence),e
 	ld (ix + Player.sequence + 1),d
+	call Visualization_Detect
+	ret nz
+	ld (ix + Player.enableVisualization),0
 	ret
 
 ; ix = this
@@ -314,3 +317,9 @@ Done:
 	pop ix
 	ret
 	ENDP
+
+; f <- nz: supported
+Player_Detect:
+	call Visualization_Detect
+	call z,VDP_IsTMS9918A
+	ret

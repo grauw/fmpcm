@@ -124,6 +124,13 @@ VRStartLoop:
 	ret
 	ENDP
 
+; f <- nz: supported
+Visualization_Detect:
+	ld hl,IDBYT2
+	call System_ReadBIOS
+	and a
+	ret
+
 ;
 Visualization_palette:
 	dw 000H, 000H, 000H, 070H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H

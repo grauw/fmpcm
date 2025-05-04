@@ -130,6 +130,9 @@ Application_Print:
 Application_Run: PROC
 	ld hl,Application_welcome
 	call Application_Print
+	call Player_Detect
+	ld hl,Application_msx2Required
+	call z,System_ThrowExceptionWithMessage
 	push ix
 	call Application_GetCLI
 	call CLI_HasFileInfoBlock
@@ -269,6 +272,9 @@ Application_endPlayback:
 
 Application_playing:
 	db "Playing...",13,10,0
+
+Application_msx2Required:
+	db "MSX2 is required.",13,10,0
 
 Application_driverNotFound:
 	db "MSX-MUSIC not found.",13,10,0
