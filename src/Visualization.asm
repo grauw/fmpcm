@@ -11,7 +11,7 @@ Visualization: MACRO
 	clearCommand:
 		VDPCommand 0, 0, 0, 212, 512, 44, 0, 0, VDPCommand_HMMV
 	lmmvCommand:
-		VDPCommand 0, 0, 0, 0, 1, 1, 8, 0, VDPCommand_LMMV
+		VDPCommand 0, 0, 0, 0, 1, 1, 3, 0, VDPCommand_LMMV
 	ENDM
 
 ; iy = track
@@ -30,12 +30,14 @@ Visualization_Construct:
 	ld a,0
 	ld (BDRCLR),a
 	push ix
-	ld a,7
+	ld a,6
 	ld ix,CHGMOD
 	call System_CallBIOS
 	pop ix
 	call VDP_EnableBlank
 	call VDP_DisableSprites
+	ld hl,Visualization_palette
+	call VDP_SetPalette
 	call Visualization_Draw
 	call Visualization_WaitVBlank
 	call VDP_DisableBlank
@@ -121,3 +123,7 @@ VRStartLoop:
 	ei
 	ret
 	ENDP
+
+;
+Visualization_palette:
+	dw 000H, 000H, 000H, 070H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H, 000H
