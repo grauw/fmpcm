@@ -12,7 +12,7 @@ Plays back PCM files on the YM2413 OPLL MSX-MUSIC sound chip.
 
 * Author: Laurens Holst <laurens@grauw.nl>
 * Site: <http://www.grauw.nl/projects/fmpcm/>
-* Source: <https://hg.sr.ht/~grauw/fmpcm>
+* Source: <https://github.com/grauw/fmpcm>
 * Support: <http://www.msx.org/forum/msx-talk/software/fm-pcm-player>
 * License: Simplified BSD License
 
@@ -96,11 +96,11 @@ places mentioned in the project information section.
 You are also free to re-use code for your own projects, provided you abide by
 the license terms.
 
-FM PCM Player depends on the library project Neonlib; it is recommended to
-clone the project with Mercurial so they will automatically be pulled in at the
-correct version, otherwise you have to download them manually:
+FM PCM Player depends on the library project Neonlib, which is included as a
+Git submodule. Clone the project and its submodules at the correct versions
+with:
 
-    hg clone https://hg.sr.ht/~grauw/fmpcm
+    git clone --recurse-submodules https://github.com/grauw/fmpcm.git
 
 Building the project is really easy on all modern desktop platforms. On MacOS
 and Linux, simply invoke `make` to build the binary and symbol files into the
